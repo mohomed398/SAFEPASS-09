@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>SafePass — Terms of Use</title>
+  <link rel="stylesheet" href="terms-of-use.css" />
+</head>
+<body>
+  <div class="card">
+    <h1>Terms of Use — SafePass</h1>
+
+    
+
+    <h2>1. Acceptance</h2>
+    <p>By using the SafePass password generator ("the Service"), you agree to these Terms of Use. If you do not agree, do not use the Service.</p>
+
+    <h2>2. Service Description</h2>
+    <p>The Service generates random passwords locally in your browser based on settings you select. No passwords or secret materials are sent to any server by default. You are responsible for how you use generated passwords.</p>
+
+    <h2>3. Privacy & Data</h2>
+    <p>SafePass does not collect or transmit generated passwords to third parties. Some non-sensitive settings may be saved locally in your browser's localStorage to improve user experience. Do not rely on this Service for high-security use without additional safeguards.</p>
+
+    <h2>4. No Warranty</h2>
+    <p>The Service is provided "as is" without warranties of any kind. We do not guarantee that generated passwords are suitable for every use case or that they meet any specific policy or regulatory requirement.</p>
+
+    <h2>5. Limitation of Liability</h2>
+    <p>To the fullest extent permitted by law, SafePass and its authors are not liable for any damages arising from use of, or inability to use, the Service, including loss of data, lost profits, or security breaches arising from user misuse.</p>
+
+    <h2>6. User Responsibilities</h2>
+    <p>Users must keep generated passwords secure. We recommend using a reputable password manager to store and manage passwords. Do not share passwords in insecure channels.</p>
+
+    <h2>7. Links & Third-party Content</h2>
+    <p>The Service may link to third-party resources. We are not responsible for third-party content or practices.</p>
+
+    <h2>8. Changes to Terms</h2>
+    <p>We may update these Terms of Use. Continued use after changes indicates acceptance. Major changes will be indicated in the Service or via notice where possible.</p>
+
+    <h2>9. Contact</h2>
+    <p>For questions about these terms, email: <a href="mailto:support@example.com">support@example.com</a></p>
+
+    <footer>
+      © <span id="year"></span> SafePass — Use at your own risk.
+    </footer>
+  </div>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+    // Effective date = today
+    const d = new Date();
+    document.getElementById('effectiveDate').textContent = d.toISOString().slice(0,10);
+  </script>
+</body>
+</html>
