@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>SafePass — Privacy Policy</title>
+  <link rel="stylesheet" href="privacy-policy.css" />
+</head>
+
+<body>
+  <div class="card">
+
+    <h1>Privacy Policy — SafePass</h1>
+    
+
+    <h2>1. Introduction</h2>
+    <p>
+      SafePass ("the Service", "we", "our") is a local, browser-based password generator.
+      This Privacy Policy explains how we handle data when you use the Service.
+    </p>
+
+    <h2>2. No Passwords Are Collected</h2>
+    <p>
+      All passwords are generated <strong>locally inside your browser</strong>.
+      We do not transmit, store, log, or share any passwords you generate.
+      Nothing is sent to our servers (because none are used).
+    </p>
+
+    <h2>3. Local Storage</h2>
+    <p>
+      The Service may store non-sensitive settings (such as selected options or theme)
+      in your browser's <strong>localStorage</strong> so that your preferences are remembered.
+      These settings never leave your device.
+    </p>
+
+    <h2>4. No Tracking</h2>
+    <p>
+      SafePass does not use:
+    </p>
+    <ul>
+      <li>cookies</li>
+      <li>analytics scripts</li>
+      <li>tracking pixels</li>
+      <li>user profiling</li>
+    </ul>
+    <p>
+      We do not track your identity, behavior, IP address, or device information.
+    </p>
+
+    <h2>5. Third-party Links</h2>
+    <p>
+      The Service may link to third-party websites or tools.
+      We are not responsible for the privacy practices or content of external sites.
+      Always review third-party policies before interacting with them.
+    </p>
+
+    <h2>6. Security</h2>
+    <p>
+      Since all password generation occurs locally, the security of your device and browser
+      directly affects the safety of passwords you generate. Use up-to-date software and avoid insecure environments.
+    </p>
+
+    <h2>7. Changes to This Policy</h2>
+    <p>
+      We may update this Privacy Policy from time to time.
+      The updated version will be posted on this page with a new effective date.
+    </p>
+
+    <h2>8. Contact</h2>
+    <p>
+      If you have questions about this Privacy Policy, contact us at:
+      <a href="mailto:support@example.com">support@example.com</a>
+    </p>
+
+    <footer>
+      © <span id="year"></span> SafePass — Privacy matters.
+    </footer>
+
+  </div>
+
+  <script>
+    const d = new Date();
+    document.getElementById("year").textContent = d.getFullYear();
+    document.getElementById("date").textContent = d.toISOString().slice(0,10);
+  </script>
+
+</body>
+</html>
