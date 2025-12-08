@@ -1,0 +1,397 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>SafePass — Neon Password Generator</title>
+  <link rel="stylesheet" href="SAFEPASS.css">
+  <style>
+    /* أنماط إضافية لقسم التوضيح */
+    .explanation-section {
+      margin-top: 40px;
+      padding: 30px;
+      background: rgba(16, 22, 30, 0.6);
+      border-radius: 20px;
+      border: 1px solid rgba(124, 77, 255, 0.2);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    }
+    
+    .explanation-title {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 25px;
+      text-align: center;
+      text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+    }
+    
+    .explanation-content {
+      color: var(--text);
+      line-height: 1.7;
+      font-size: 16px;
+    }
+    
+    .explanation-content h2 {
+      color: var(--accent);
+      margin-top: 30px;
+      margin-bottom: 15px;
+      font-size: 22px;
+    }
+    
+    .explanation-content h3 {
+      color: var(--primary);
+      margin-top: 25px;
+      margin-bottom: 10px;
+      font-size: 18px;
+    }
+    
+    .explanation-content ul {
+      margin: 15px 0;
+      padding-left: 25px;
+    }
+    
+    .explanation-content li {
+      margin-bottom: 10px;
+    }
+    
+    .highlight {
+      background: linear-gradient(90deg, rgba(0, 229, 255, 0.1), rgba(124, 77, 255, 0.1));
+      padding: 20px;
+      border-radius: 12px;
+      margin: 20px 0;
+      border-left: 4px solid var(--primary);
+    }
+    
+    @media (max-width: 768px) {
+      .explanation-section {
+        padding: 20px;
+        margin-top: 30px;
+      }
+      
+      .explanation-title {
+        font-size: 24px;
+      }
+      
+      .explanation-content {
+        font-size: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="card" role="main">
+    <div class="card-inner">
+      <!-- Header مع العنوان في المنتصف -->
+      <header>
+        <div style="width: 120px;" class="header-spacer"></div>
+        <div class="title-container">
+          <div class="title">SafePass <span class="pill">welcome</span></div>
+          <div class="subtitle">Choose settings, then copy a strong secure password.</div>
+        </div>
+        <button id="regen" class="btn btn--primary" title="Regenerate">Regenerate</button>
+      </header>
+
+      <!-- OUTPUT BAR -->
+      <div class="output" aria-live="polite">
+        <input id="password" class="password" type="text" readonly value="" aria-label="Generated password" />
+        <div style="display:flex;gap:8px;align-items:center;">
+          <button id="copy" class="btn" title="Copy to clipboard"> Copy</button>
+          <button id="reveal" class="btn btn--ghost" title="Show/Hide">️ Show</button>
+        </div>
+      </div>
+
+      <!-- زر Generate -->
+      <div style="margin-top:12px; display:flex; justify-content:center;">
+        <button id="generateBtn" class="btn btn--primary" style="min-width:240px">Generate Password</button>
+      </div>
+
+      <div class="grid-2" style="margin-top:18px;">
+        <!-- SETTINGS -->
+        <section class="group" aria-label="Settings">
+          <h3>Settings</h3>
+
+          <div class="field">
+            <label for="len" class="muted">Length</label>
+            <select id="len" aria-label="Password length">
+              <option value="6">6</option><option value="8">8</option><option value="10">10</option><option value="12">12</option>
+              <option value="14">14</option><option value="16" selected>16</option><option value="20">20</option><option value="24">24</option>
+              <option value="32">32</option><option value="48">48</option><option value="64">64</option>
+            </select>
+          </div>
+
+          <div class="field"><label class="check"><input id="allow-lower" type="checkbox" checked> Lowercase (abc)</label></div>
+          <div class="field"><label class="check"><input id="allow-upper" type="checkbox" checked> Uppercase (ABC)</label></div>
+          <div class="field"><label class="check"><input id="allow-num" type="checkbox" checked> Numbers (0–9)</label></div>
+          <div class="field"><label class="check"><input id="allow-sym" type="checkbox" checked> Common symbols (!@#$%^&*()+)</label></div>
+          <div class="field"><label class="check"><input id="allow-other" type="checkbox"> Extra symbols (~`[];?,)</label></div>
+          <div class="field"><label class="check"><input id="exclude-dup" type="checkbox"> Exclude duplicate characters</label></div>
+          <div class="field"><label class="check"><input id="exclude-sim" type="checkbox"> Exclude similar (i I l L 1 o O 0)</label></div>
+        </section>
+
+        <!-- STRENGTH & INFO -->
+        <section class="group" aria-label="Strength">
+          <h3>Strength & Info</h3>
+          <div class="field">
+            <div style="flex:1">
+              <div class="meter" aria-hidden="true"><div id="meterBar"></div></div>
+              <div class="footer" style="margin-top:8px">
+                <div class="muted">Strength: <strong id="strengthLabel">—</strong></div>
+                <div class="muted">Entropy: <strong id="entropy">0</strong> bits</div>
+              </div>
+            </div>
+          </div>
+          <div class="hint">Strength increases with length and variety of character sets.</div>
+        </section>
+      </div>
+
+      <div class="footer" style="margin-top:14px">
+        <div class="made"> Neon style — works locally in your browser, no server upload.</div>
+        <div class="made">© <span id="year"></span> SafePass.</div>
+      </div>
+
+      <!-- قسم التوضيح الجديد -->
+      <section class="explanation-section" aria-label="About SafePass">
+        <h2 class="explanation-title">The Tech Behind SafePass</h2>
+        <div class="explanation-content">
+          <p>In today's digital world, passwords are our first line of defense against unauthorized access to our personal and professional data. With cyber threats becoming more sophisticated every day, having a strong, unique password for each service is no longer optional—it's essential.</p>
+          
+          <div class="highlight">
+            <p><strong>SafePass uses advanced cryptographic principles to generate passwords that are:</strong></p>
+            <ul>
+              <li>Mathematically secure with high entropy</li>
+              <li>Resistant to brute-force attacks</li>
+              <li>Customizable to meet different security requirements</li>
+              <li>Generated locally in your browser (no data sent to servers)</li>
+            </ul>
+          </div>
+          
+          <h2>Why Strong Passwords Matter</h2>
+          <p>Every day, thousands of accounts are compromised due to weak passwords. The most common passwords like "123456" or "password" can be cracked in milliseconds. SafePass generates passwords that would take centuries to crack using current technology.</p>
+          
+          <h3>How Password Entropy Works</h3>
+          <p>Entropy measures the unpredictability of a password. The higher the entropy (measured in bits), the stronger the password:</p>
+          <ul>
+            <li><strong>40-50 bits:</strong> Weak - Crackable in days</li>
+            <li><strong>60-70 bits:</strong> Moderate - Crackable in years</li>
+            <li><strong>80-90 bits:</strong> Strong - Crackable in centuries</li>
+            <li><strong>100+ bits:</strong> Very Strong - Virtually uncrackable</li>
+          </ul>
+          
+          <h2>Best Practices for Password Security</h2>
+          <ol>
+            <li>Use a different password for every service</li>
+            <li>Enable two-factor authentication when available</li>
+            <li>Use a password manager to store your passwords securely</li>
+            <li>Change passwords periodically, especially for critical accounts</li>
+            <li>Never share passwords via email or messaging apps</li>
+          </ol>
+          
+          <div class="highlight">
+            <p><strong>Remember:</strong> Your password is like a key to your digital life. SafePass helps you create the strongest possible keys to keep your information secure.</p>
+          </div>
+          
+          <h3>About Our Technology</h3>
+          <p>SafePass uses cryptographically secure random number generation and runs entirely in your browser. No passwords are ever transmitted over the internet or stored on our servers. Your security and privacy are our top priorities.</p>
+        </div>
+      </section>
+
+      <!-- قسم النصوص القانونية - تم نقله إلى الأسفل -->
+      <div class="legal-footer" style="margin-top: 40px; border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 25px;">
+        <div class="legal-text">
+          By continuing, you agree to SafePass's
+          <a href="terms-of-use.html">Terms of Use</a>
+          and acknowledge our
+          <a href="privacy-policy.html">Privacy Policy</a>.
+        </div>
+      </div>
+    </div> <!-- إغلاق card-inner -->
+  </main> <!-- إغلاق main -->
+
+  <script>
+    // --- Character pools ---
+    const POOLS = {
+      lower: "abcdefghijklmnopqrstuvwxyz",
+      upper: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+      num:   "0123456789",
+      sym:   "!@#$%^&*()+",
+      other: "~`[];?,"
+    };
+
+    // Elements
+    const $ = id => document.getElementById(id);
+    const el = {
+      pass: $("password"),
+      copy: $("copy"),
+      regen: $("regen"),
+      reveal: $("reveal"),
+      len: $("len"),
+      generateBtn: $("generateBtn"),
+      allowLower: $("allow-lower"),
+      allowUpper: $("allow-upper"),
+      allowNum: $("allow-num"),
+      allowSym: $("allow-sym"),
+      allowOther: $("allow-other"),
+      excludeDup: $("exclude-dup"),
+      excludeSim: $("exclude-sim"),
+      meterBar: $("meterBar"),
+      strengthLabel: $("strengthLabel"),
+      entropy: $("entropy"),
+    };
+
+    // Save & load settings (localStorage)
+    const SETTINGS_KEYS = ["len","allow-lower","allow-upper","allow-num","allow-sym","allow-other","exclude-dup","exclude-sim"];
+    function saveSettings(){
+      const data = SETTINGS_KEYS.reduce((acc,key)=>{
+        if(key === "len") acc[key] = el.len.value; else acc[key] = $(key).checked;
+        return acc;
+      },{});
+      try{ localStorage.setItem("neon-pass-settings", JSON.stringify(data)); }catch(e){}
+    }
+    function loadSettings(){
+      try{
+        const data = JSON.parse(localStorage.getItem("neon-pass-settings"));
+        if(!data) return;
+        el.len.value = data["len"] ?? el.len.value;
+        SETTINGS_KEYS.filter(k=>k!=="len").forEach(k=>{ if(typeof data[k] === 'boolean') $(k).checked = data[k]; });
+      }catch(e){}
+    }
+
+    // Utility: remove similar lookalikes
+    function stripSimilar(s){
+      return s.replace(/[iIlL1oO0]/g, "");
+    }
+
+    function buildPool(){
+      let pool = "";
+      if(el.allowLower.checked) pool += POOLS.lower;
+      if(el.allowUpper.checked) pool += POOLS.upper;
+      if(el.allowNum.checked)   pool += POOLS.num;
+      if(el.allowSym.checked)   pool += POOLS.sym;
+      if(el.allowOther.checked) pool += POOLS.other;
+      if(el.excludeSim.checked) pool = stripSimilar(pool);
+      return pool;
+    }
+
+    function calcEntropy(len, poolSize){
+      if(poolSize <= 1 || len <= 0) return 0;
+      return Math.round(len * (Math.log(poolSize) / Math.log(2)));
+    }
+
+    function labelStrength(bits){
+      if(bits >= 128) return {label:"Very strong", color:"linear-gradient(90deg, var(--success), var(--primary))", pct: 100};
+      if(bits >= 90)  return {label:"Excellent", color:"linear-gradient(90deg, var(--success), var(--accent))", pct: 85};
+      if(bits >= 70)  return {label:"Strong",    color:"linear-gradient(90deg, var(--primary), var(--success))", pct: 65};
+      if(bits >= 50)  return {label:"Medium",    color:"linear-gradient(90deg, var(--warning), var(--primary))", pct: 45};
+      if(bits >= 35)  return {label:"Weak",      color:"linear-gradient(90deg, var(--danger), var(--warning))", pct: 30};
+      return              {label:"Very weak", color:"linear-gradient(90deg, var(--danger), var(--accent))", pct: 18};
+    }
+
+    function generatePassword(){
+      const len = parseInt(el.len.value, 10);
+      const pool = buildPool();
+      const uniqueCount = new Set(pool).size;
+
+      if(!pool){
+        el.pass.value = "⚠️ Please enable at least one character set";
+        updateStrength(0, 0);
+        return;
+      }
+
+      if(el.excludeDup.checked && len > uniqueCount){
+        el.pass.value = `⚠️ Requested length (${len}) exceeds unique characters available (${uniqueCount}). Reduce length or allow duplicates.`;
+        updateStrength(0, 0);
+        return;
+      }
+
+      // Ensure at least one char from each selected group
+      const chosen = [];
+      const groups = [];
+      if(el.allowLower.checked) groups.push(POOLS.lower);
+      if(el.allowUpper.checked) groups.push(POOLS.upper);
+      if(el.allowNum.checked)   groups.push(POOLS.num);
+      if(el.allowSym.checked)   groups.push(POOLS.sym);
+      if(el.allowOther.checked) groups.push(POOLS.other);
+
+      let workingPool = pool;
+      groups.forEach(g=>{
+        let gg = el.excludeSim.checked ? stripSimilar(g) : g;
+        if(!gg) return;
+        let ch = gg[Math.floor(Math.random()*gg.length)];
+        chosen.push(ch);
+        if(el.excludeDup.checked) workingPool = workingPool.replaceAll(ch, "");
+      });
+
+      while(chosen.length < len){
+        const ch = workingPool[Math.floor(Math.random()*workingPool.length)];
+        chosen.push(ch);
+        if(el.excludeDup.checked) workingPool = workingPool.replaceAll(ch, "");
+      }
+
+      // Shuffle
+      for(let i = chosen.length - 1; i > 0; i--){
+        const j = Math.floor(Math.random() * (i + 1));
+        [chosen[i], chosen[j]] = [chosen[j], chosen[i]];
+      }
+
+      const pwd = chosen.join("");
+      el.pass.value = pwd;
+      updateStrength(len, new Set(buildPool()).size);
+    }
+
+    function updateStrength(len, poolSize){
+      const bits = calcEntropy(len, poolSize);
+      const {label, color, pct} = labelStrength(bits);
+      el.meterBar.style.width = pct + '%';
+      el.meterBar.style.background = color;
+      el.strengthLabel.textContent = label;
+      el.entropy.textContent = bits;
+    }
+
+    function copyToClipboard(){
+      const txt = el.pass.value;
+      if(!txt || txt.startsWith('⚠️')) return;
+      if(navigator.clipboard){
+        navigator.clipboard.writeText(txt).then(()=>flash(el.copy, 'Copied ')).catch(()=>fallbackCopy(txt));
+      } else fallbackCopy(txt);
+    }
+
+    function fallbackCopy(text){
+      const ta = document.createElement('textarea');
+      ta.value = text; document.body.appendChild(ta); ta.select();
+      try{ document.execCommand('copy'); flash(el.copy, 'Copied '); }
+      finally{ document.body.removeChild(ta); }
+    }
+
+    function flash(button, msg){
+      const prev = button.textContent;
+      button.textContent = msg; button.style.boxShadow = 'var(--glow-1)';
+      setTimeout(()=>{ button.textContent = prev; button.style.boxShadow=''; }, 1200);
+    }
+
+    function toggleReveal(){
+      if(el.pass.type === 'text'){ el.pass.type = 'password'; el.reveal.textContent = '️ Show'; }
+      else { el.pass.type = 'text'; el.reveal.textContent = ' Hide'; }
+    }
+
+    // Events
+    [el.len, el.allowLower, el.allowUpper, el.allowNum, el.allowSym, el.allowOther, el.excludeDup, el.excludeSim]
+      .forEach(ctrl=> ctrl.addEventListener('input', ()=>{ saveSettings(); generatePassword(); }));
+
+    el.copy.addEventListener('click', copyToClipboard);
+    el.reveal.addEventListener('click', toggleReveal);
+    el.regen.addEventListener('click', ()=>{ generatePassword(); flash(el.regen, ' Ready'); });
+    el.generateBtn.addEventListener('click', ()=>{ generatePassword(); flash(el.generateBtn, 'Generated'); });
+
+    document.addEventListener('keydown', (e)=>{
+      if((e.ctrlKey || e.metaKey) && e.key.toLowerCase()==='c'){ e.preventDefault(); copyToClipboard(); }
+    });
+
+    document.addEventListener('DOMContentLoaded', ()=>{
+      $("year").textContent = new Date().getFullYear();
+      loadSettings();
+      generatePassword();
+      el.pass.type = 'password';
+    });
+  </script>
+</body>
+</html>
